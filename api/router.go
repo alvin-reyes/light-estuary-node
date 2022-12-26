@@ -49,12 +49,14 @@ func InitializeEchoRouterConfig(ln *core.LightNode) {
 
 	defaultGatewayRoute := e.Group("")
 	ConfigureGatewayRouter(defaultGatewayRoute, ln) // access to light node
+	ConfigureDashboardRouter(defaultGatewayRoute, ln)
 
 	apiGroup := e.Group("/api/v1")       // no protection for now
 	ConfigureGatewayRouter(apiGroup, ln) // access to light node
 	ConfigStoreRouter(apiGroup, ln)      // store
 	ConfigureNodeRouter(apiGroup, ln)
 	// ConfigRetrieveRouter() // retrieval
+
 	ConfigMetricsRouter(apiGroup) // metrics
 
 	// Start server
