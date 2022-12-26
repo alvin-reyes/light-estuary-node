@@ -17,6 +17,24 @@ func StoreCmd() []*cli.Command {
 		},
 	}
 
-	storeCommands = append(storeCommands, storeFileCmd)
+	storeDirCmd := &cli.Command{
+		Name:  "store-dir",
+		Usage: "Store a directory on the Filecoin network.",
+		Action: func(c *cli.Context) error {
+			fmt.Println("store")
+			return nil
+		},
+	}
+
+	storeCarCmd := &cli.Command{
+		Name:  "store-car",
+		Usage: "Store a car file on the Filecoin network.",
+		Action: func(c *cli.Context) error {
+			fmt.Println("store")
+			return nil
+		},
+	}
+
+	storeCommands = append(storeCommands, storeFileCmd, storeDirCmd, storeCarCmd)
 	return storeCommands
 }

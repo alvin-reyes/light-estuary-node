@@ -9,8 +9,8 @@ type StagingBucket struct {
 	UUID       string `json:"uuid"`
 	Status     string `json:"status"` // open, in-progress, completed (closed).
 	Cid        string `json:"cid"`    // car file of the consolidated content
-	created_at time.Time
-	updated_at time.Time
+	Created_at time.Time
+	Updated_at time.Time
 }
 
 type Content struct {
@@ -29,6 +29,6 @@ type ContentDeals struct {
 	DealID      uint   `gorm:"deal_id"`
 	Status      string `gorm:"status"` // active, inactive.
 	Replication int    `gorm:"replication"`
-	created_at  time.Time
-	updated_at  time.Time
+	Created_at  time.Time
+	Updated_at  time.Time
 }
