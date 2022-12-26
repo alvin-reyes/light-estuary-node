@@ -25,7 +25,7 @@ This node comes with it's own light gateway to serve directories and files.
 
 View the gateway using:
 - https://localhost:1313
-- - https://localhost:1313/dashboard
+- https://localhost:1313/dashboard
 - https://localhost:1313/gw/ipfs/:cid
 - https://localhost:1313/ipfs/:cid
 
