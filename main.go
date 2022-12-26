@@ -6,17 +6,21 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/gabriel-vasile/mimetype"
+	cid2 "github.com/ipfs/go-cid"
+	mdagipld "github.com/ipfs/go-ipld-format"
+	"github.com/ipfs/go-merkledag"
+	"github.com/ipfs/go-unixfs"
+	uio "github.com/ipfs/go-unixfs/io"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"html/template"
 	"io"
 	"net/http"
 	_ "net/http"
-	httpprof "net/http/pprof"
 	"net/url"
 	"os"
 	"os/signal"
 	gopath "path"
-	"runtime"
 	"strings"
 	"syscall"
 	"time"
@@ -27,13 +31,7 @@ import (
 	"github.com/multiformats/go-multiaddr"
 
 	whypfs "github.com/application-research/whypfs-core"
-	"github.com/gabriel-vasile/mimetype"
-	cid2 "github.com/ipfs/go-cid"
-	mdagipld "github.com/ipfs/go-ipld-format"
 	logging "github.com/ipfs/go-log/v2"
-	"github.com/ipfs/go-merkledag"
-	"github.com/ipfs/go-unixfs"
-	uio "github.com/ipfs/go-unixfs/io"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"golang.org/x/xerrors"
@@ -54,6 +52,37 @@ func (he HttpError) Error() string {
 
 type HttpErrorResponse struct {
 	Error HttpError `json:"error"`
+}
+
+type StagingBucket struct {
+	// ID is the unique identifier for the bucket.
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	UUID       string `json:"uuid"`
+	Status     string `json:"status"` // open, in-progress, completed (closed).
+	Cid        string `json:"cid"`    // car file of the consolidated content
+	created_at time.Time
+	updated_at time.Time
+}
+
+type Content struct {
+	ID            uint   `gorm:"primaryKey"`
+	Name          string `json:"name"`
+	Size          int64  `json:"size"`
+	Cid           string `json:"cid"`
+	StagingBucket string `json:"staging_bucket"` // where this content will be associated
+	created_at    time.Time
+	updated_at    time.Time
+}
+
+type ContentDeals struct {
+	ID          uint   `gorm:"primary_key"`
+	ContentID   uint   `gorm:"content_id"`
+	DealID      uint   `gorm:"deal_id"`
+	Status      string `gorm:"status"` // active, inactive.
+	Replication int    `gorm:"replication"`
+	created_at  time.Time
+	updated_at  time.Time
 }
 
 var (
@@ -94,7 +123,17 @@ func BootstrapEstuaryPeers() []peer.AddrInfo {
 
 func main() {
 	OsSignal = make(chan os.Signal, 1)
+
+	// add a command to run API node
+
+	// add a cli command to run commands
+
+	// initialize sqlite database using gorm
+
+	// auto create staging buckets
+	// gateways
 	GatewayRoutersConfig()
+
 	LoopForever()
 }
 
@@ -175,15 +214,14 @@ func GatewayRoutersConfig() {
 		panic(err)
 	}
 
-	// Routes
-	//e.GET("/gw/:path", OriginalGatewayHandler)
-
+	//	gateway
 	e.GET("/gw/ipfs/:path", GatewayResolverCheckHandlerDirectPath)
 	e.GET("/gw/:path", GatewayResolverCheckHandlerDirectPath)
 	e.GET("/ipfs/:path", GatewayResolverCheckHandlerDirectPath)
 	e.GET("/gw/dir/:path", GatewayDirResolverCheckHandler)
 	e.GET("/gw/file/:path", GatewayFileResolverCheckHandler)
 
+	// metrics
 	phandle := promhttp.Handler()
 	e.GET("/debug/metrics/prometheus", func(e echo.Context) error {
 		phandle.ServeHTTP(e.Response().Writer, e.Request())
@@ -201,15 +239,16 @@ func GatewayRoutersConfig() {
 		return nil
 	})
 	e.GET("/debug/stack", func(e echo.Context) error {
-		err := writeAllGoroutineStacks(e.Response().Writer)
+		err := metrics.WriteAllGoroutineStacks(e.Response().Writer)
 		if err != nil {
 			log.Error(err)
 		}
 		return err
 	})
 
-	e.GET("/debug/pprof/:prof", serveProfile) // Upload for testing
+	e.GET("/debug/pprof/:prof", metrics.ServeProfile) // Upload for testing
 
+	// upload
 	e.POST("/upload", func(c echo.Context) error {
 		file, err := c.FormFile("file")
 		if err != nil {
@@ -222,7 +261,19 @@ func GatewayRoutersConfig() {
 
 		addNode, err := node.AddPinFile(c.Request().Context(), src, nil)
 
-		//node.Blockservice.DeleteBlock(ctx, addNode.Cid())
+		// get availabel staging buckets.
+		// save the file to the database.
+		content := Content{
+			Name:          file.Filename,
+			Size:          file.Size,
+			Cid:           addNode.Cid().String(),
+			StagingBucket: "",
+			created_at:    time.Time{},
+			updated_at:    time.Time{},
+		}
+
+		fmt.Println(content) //	save content
+
 		if err != nil {
 			return err
 		}
@@ -232,11 +283,6 @@ func GatewayRoutersConfig() {
 
 	// Start server
 	e.Logger.Fatal(e.Start("0.0.0.0:1313"))
-}
-
-func serveProfile(c echo.Context) error {
-	httpprof.Handler(c.Param("prof")).ServeHTTP(c.Response().Writer, c.Request())
-	return nil
 }
 
 func GatewayDirResolverCheckHandler(c echo.Context) error {
@@ -261,24 +307,6 @@ func GatewayDirResolverCheckHandler(c echo.Context) error {
 
 	c.Response().Write([]byte("nice dir"))
 	return nil
-}
-
-func writeAllGoroutineStacks(w io.Writer) error {
-	buf := make([]byte, 64<<20)
-	for i := 0; ; i++ {
-		n := runtime.Stack(buf, true)
-		if n < len(buf) {
-			buf = buf[:n]
-			break
-		}
-		if len(buf) >= 1<<30 {
-			// Filled 1 GB - stop there.
-			break
-		}
-		buf = make([]byte, 2*len(buf))
-	}
-	_, err := w.Write(buf)
-	return err
 }
 
 func GatewayFileResolverCheckHandler(c echo.Context) error {

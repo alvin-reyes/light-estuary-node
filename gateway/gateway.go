@@ -240,4 +240,5 @@ func ParsePath(p string) (string, cid.Cid, []string, error) {
 	}
 
 	return protocol, cc, parts[2:], nil
+
 }
