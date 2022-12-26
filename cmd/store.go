@@ -12,7 +12,11 @@ func StoreCmd() []*cli.Command {
 		Name:  "store-file",
 		Usage: "Store a file on the Filecoin network.",
 		Action: func(c *cli.Context) error {
-			fmt.Println("store")
+			//filePath, err := fmt.Println(c.Args().Get(0))
+			//if err != nil {
+			//	return err
+			//}
+
 			return nil
 		},
 	}
@@ -31,6 +35,7 @@ func StoreCmd() []*cli.Command {
 		Usage: "Store a car file on the Filecoin network.",
 		Action: func(c *cli.Context) error {
 			fmt.Println("store")
+
 			return nil
 		},
 	}

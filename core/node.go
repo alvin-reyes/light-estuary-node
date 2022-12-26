@@ -3,6 +3,9 @@ package core
 import (
 	"context"
 	"github.com/application-research/whypfs-core"
+	"github.com/filecoin-project/go-address"
+	"github.com/filecoin-project/lotus/chain/types"
+	"github.com/filecoin-project/lotus/chain/wallet/key"
 	"github.com/ipfs/go-blockservice"
 	bsfetcher "github.com/ipfs/go-fetcher/impl/blockservice"
 	blockstore "github.com/ipfs/go-ipfs-blockstore"
@@ -18,13 +21,22 @@ import (
 	"github.com/multiformats/go-multiaddr"
 	"github.com/urfave/cli/v2"
 	"gorm.io/gorm"
+	"sync"
 )
 
 type LightNode struct {
 	Node   *whypfs.Node
 	Gw     *GatewayHandler
 	DB     *gorm.DB
+	Wallet LocalWallet
 	Config *Configuration
+}
+
+type LocalWallet struct {
+	keys     map[address.Address]*key.Key
+	keystore types.KeyStore
+
+	lk sync.Mutex
 }
 
 type Configuration struct {
@@ -68,8 +80,12 @@ func BootstrapEstuaryPeers() []peer.AddrInfo {
 
 func NewLightNode(ctx *cli.Context) (*LightNode, error) {
 
-	// database connection
+	// initialize the wallet (to make deals).
 
+	// database connection
+	db, err := NewDatabase()
+
+	// node
 	whypfsPeer, err := whypfs.NewNode(whypfs.NewNodeParams{
 		Ctx:       context.Background(),
 		Datastore: whypfs.NewInMemoryDatastore(),
@@ -80,15 +96,18 @@ func NewLightNode(ctx *cli.Context) (*LightNode, error) {
 
 	whypfsPeer.BootstrapPeers(BootstrapEstuaryPeers())
 
+	// gateway
 	gw, err := NewGatewayHandler(whypfsPeer)
 
 	if err != nil {
 		return nil, err
 	}
 
+	// create the global light node.
 	return &LightNode{
 		Node: whypfsPeer,
 		Gw:   gw,
+		DB:   db,
 	}, nil
 
 }

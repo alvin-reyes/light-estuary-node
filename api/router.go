@@ -47,10 +47,13 @@ func InitializeEchoRouterConfig(ln *core.LightNode) {
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.HTTPErrorHandler = ErrorHandler
 
-	apiGroup := e.Group("/api/v1")       // no protection for now
-	ConfigureGatewayRouter(apiGroup, ln) // access to light node
-	ConfigStoreRouter(apiGroup, ln)      // store
-	ConfigMetricsRouter(apiGroup)        // metrics
+	defaultGatewayRoute := e.Group("")
+	ConfigureGatewayRouter(defaultGatewayRoute, ln) // access to light node
+
+	apiGroup := e.Group("/api/v1")  // no protection for now
+	ConfigStoreRouter(apiGroup, ln) // store
+	// ConfigRetrieveRouter() // retrieval
+	ConfigMetricsRouter(apiGroup) // metrics
 
 	// Start server
 	e.Logger.Fatal(e.Start("0.0.0.0:1313")) // configuration

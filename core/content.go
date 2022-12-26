@@ -2,6 +2,7 @@ package core
 
 import "time"
 
+// DB models
 type StagingBucket struct {
 	// ID is the unique identifier for the bucket.
 	ID         string `json:"id"`
