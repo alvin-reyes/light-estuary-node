@@ -29,6 +29,7 @@ type LightNode struct {
 	Gw     *GatewayHandler
 	DB     *gorm.DB
 	Wallet LocalWallet
+	//Filclient *filclient.Client
 	Config *Configuration
 }
 
@@ -79,6 +80,26 @@ func BootstrapEstuaryPeers() []peer.AddrInfo {
 }
 
 func NewLightNode(ctx *cli.Context) (*LightNode, error) {
+	db, err := NewDatabase() // database
+	// node
+	whypfsPeer, err := whypfs.NewNode(whypfs.NewNodeParams{
+		Ctx:       context.Background(),
+		Datastore: whypfs.NewInMemoryDatastore(),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	whypfsPeer.BootstrapPeers(BootstrapEstuaryPeers())
+
+	// create the global light node.
+	return &LightNode{
+		Node: whypfsPeer,
+		DB:   db,
+	}, nil
+}
+
+func NewFullLightNode(ctx *cli.Context) (*LightNode, error) {
 
 	// initialize the wallet (to make deals).
 

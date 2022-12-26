@@ -43,6 +43,7 @@ type GatewayHandler struct {
 func ConfigureGatewayRouter(e *echo.Group, node *core.LightNode) {
 
 	//	api
+	gatewayHandler.node = node.Node
 	e.GET("/gw/ipfs/:path", GatewayResolverCheckHandlerDirectPath)
 	e.GET("/gw/:path", GatewayResolverCheckHandlerDirectPath)
 	e.GET("/ipfs/:path", GatewayResolverCheckHandlerDirectPath)

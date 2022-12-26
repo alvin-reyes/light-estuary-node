@@ -3,7 +3,7 @@ package core
 import "time"
 
 // DB models
-type StagingBucket struct {
+type Buckets struct {
 	// ID is the unique identifier for the bucket.
 	ID         string `json:"id"`
 	Name       string `json:"name"`

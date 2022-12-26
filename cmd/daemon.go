@@ -6,6 +6,8 @@ import (
 	"light-estuary-node/core"
 )
 
+var LightNode *core.LightNode
+
 func DaemonCmd() []*cli.Command {
 	// add a command to run API node
 	var daemonCommands []*cli.Command
@@ -19,6 +21,7 @@ func DaemonCmd() []*cli.Command {
 			if err != nil {
 				return err
 			}
+			LightNode = ln
 
 			// launch the API node
 			api.InitializeEchoRouterConfig(ln)
