@@ -2,6 +2,12 @@ package core
 
 import "time"
 
+type Condition struct {
+	PreProcess  func() (bool, error)
+	Condition   func() (bool, error)
+	PostProcess func() (bool, error)
+}
+
 // DB models
 type Bucket struct {
 	// ID is the unique identifier for the bucket.
@@ -12,6 +18,7 @@ type Bucket struct {
 	Cid        string `json:"cid"`    // car file of the consolidated content
 	Created_at time.Time
 	Updated_at time.Time
+	//Condition  Condition "omit"
 }
 
 type Content struct {

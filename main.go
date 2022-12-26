@@ -24,6 +24,7 @@ func main() {
 	commands = append(commands, cmd.StoreCmd()...)
 	commands = append(commands, cmd.RetrieveCmds()...)
 	commands = append(commands, cmd.DealsCmd()...)
+	commands = append(commands, cmd.BucketCmds()...)
 
 	app := &cli.App{
 		Commands: commands,

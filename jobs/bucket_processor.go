@@ -1,15 +1,5 @@
 package jobs
 
-type Condition struct {
-	PreProcess  func() (bool, error)
-	Condition   func() (bool, error)
-	PostProcess func() (bool, error)
-}
-type BucketProcessor struct {
-	Bucket        string
-	JobConditions Condition // we need to satisfy all conditions.
-}
-
 // checks the buckets for new files and compare them against conditions
 func RunBucketCreatorAndAssigner() {
 	// 1. get all the buckets
