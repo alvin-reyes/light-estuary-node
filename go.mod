@@ -1,4 +1,4 @@
-module whypfs-gateway
+module light-estuary-node
 
 go 1.19
 
@@ -23,7 +23,7 @@ require (
 	github.com/libp2p/go-libp2p v0.23.4
 	github.com/multiformats/go-multiaddr v0.8.0
 	github.com/prometheus/client_golang v1.14.0
-	github.com/urfave/cli v1.22.2
+	github.com/urfave/cli/v2 v2.23.5
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	gorm.io/gorm v1.24.2
 )
@@ -162,6 +162,7 @@ require (
 	github.com/whyrusleeping/chunker v0.0.0-20181014151217-fe64bd25879f // indirect
 	github.com/whyrusleeping/go-bs-measure v0.0.0-20220728174732-077cd42cf89d // indirect
 	github.com/whyrusleeping/go-keyspace v0.0.0-20160322163242-5b898ac5add1 // indirect
+	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	go.opentelemetry.io/otel v1.9.0 // indirect
 	go.opentelemetry.io/otel/trace v1.9.0 // indirect

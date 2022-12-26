@@ -1,23 +1,18 @@
 package cmd
 
 import (
-	"github.com/urfave/cli"
-	"os"
-	"whypfs-gateway/api"
-	"whypfs-gateway/core"
+	"github.com/urfave/cli/v2"
+	"light-estuary-node/api"
+	"light-estuary-node/core"
 )
 
-func DaemonCmd() {
+func DaemonCmd() []*cli.Command {
 	// add a command to run API node
-	app := &cli.App{
+	var daemonCommands []*cli.Command
+
+	daemonCmd := &cli.Command{
 		Name:  "daemon",
 		Usage: "A light version of Estuary that allows users to upload and download data from the Filecoin network.",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  "config", // config file
-				Usage: "config file",
-			},
-		},
 		Action: func(c *cli.Context) error {
 
 			ln, err := core.NewLightNode(c)
@@ -32,5 +27,9 @@ func DaemonCmd() {
 		},
 	}
 
-	app.Run(os.Args)
+	// add commands.
+	daemonCommands = append(daemonCommands, daemonCmd)
+
+	return daemonCommands
+
 }

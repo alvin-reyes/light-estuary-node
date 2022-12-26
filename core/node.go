@@ -16,7 +16,7 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/multiformats/go-multiaddr"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 	"gorm.io/gorm"
 )
 
@@ -67,6 +67,9 @@ func BootstrapEstuaryPeers() []peer.AddrInfo {
 }
 
 func NewLightNode(ctx *cli.Context) (*LightNode, error) {
+
+	// database connection
+
 	whypfsPeer, err := whypfs.NewNode(whypfs.NewNodeParams{
 		Ctx:       context.Background(),
 		Datastore: whypfs.NewInMemoryDatastore(),

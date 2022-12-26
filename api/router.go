@@ -6,11 +6,11 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"golang.org/x/xerrors"
+	"light-estuary-node/core"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-	"whypfs-gateway/core"
 )
 
 var (

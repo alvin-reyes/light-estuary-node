@@ -3,8 +3,8 @@ package api
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"light-estuary-node/metrics"
 	"net/http"
-	"whypfs-gateway/metrics"
 )
 
 func ConfigMetricsRouter(e *echo.Group) {

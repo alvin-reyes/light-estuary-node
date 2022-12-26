@@ -3,8 +3,8 @@ package api
 import (
 	"fmt"
 	"github.com/labstack/echo/v4"
+	"light-estuary-node/core"
 	"time"
-	"whypfs-gateway/core"
 )
 
 func ConfigStoreRouter(e *echo.Group, node *core.LightNode) {

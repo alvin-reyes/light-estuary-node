@@ -4,8 +4,10 @@ package main
 
 import (
 	logging "github.com/ipfs/go-log/v2"
+	"github.com/urfave/cli/v2"
+	"light-estuary-node/cmd"
 	_ "net/http"
-	"whypfs-gateway/cmd"
+	"os"
 )
 
 var (
@@ -14,5 +16,17 @@ var (
 
 func main() {
 
-	cmd.DaemonCmd() // daemon
+	// get all the commands
+	var commands []*cli.Command
+
+	commands = append(commands, cmd.DaemonCmd()...)
+	commands = append(commands, cmd.StoreCmd()...)
+
+	app := &cli.App{
+		Commands: commands,
+	}
+
+	if err := app.Run(os.Args); err != nil {
+		log.Fatal(err)
+	}
 }
