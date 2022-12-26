@@ -1,12 +1,11 @@
 package cmd
 
 import (
+	"context"
 	"github.com/urfave/cli/v2"
 	"light-estuary-node/api"
 	"light-estuary-node/core"
 )
-
-var LightNode *core.LightNode
 
 func DaemonCmd() []*cli.Command {
 	// add a command to run API node
@@ -17,11 +16,10 @@ func DaemonCmd() []*cli.Command {
 		Usage: "A light version of Estuary that allows users to upload and download data from the Filecoin network.",
 		Action: func(c *cli.Context) error {
 
-			ln, err := core.NewLightNode(c)
+			ln, err := core.NewLightNode(context.Background())
 			if err != nil {
 				return err
 			}
-			LightNode = ln
 
 			// launch the API node
 			api.InitializeEchoRouterConfig(ln)

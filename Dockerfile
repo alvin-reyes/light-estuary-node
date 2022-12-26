@@ -8,8 +8,8 @@ RUN go mod download
 
 COPY . ./
 
-RUN go build -tags netgo -ldflags '-s -w' -o whypfs-api
+RUN go build -tags netgo -ldflags '-s -w' -o lnode
 
 EXPOSE 1313
 
-CMD [ "/whypfs-gateway" ]
+CMD [ "/lnode daemon" ]

@@ -5,7 +5,6 @@ import "github.com/urfave/cli/v2"
 func RetrieveCmds() []*cli.Command {
 
 	var retrieveCommands []*cli.Command
-
 	retrieveFileCmd := &cli.Command{
 		Name:  "retrieve-file",
 		Usage: "Retrieve a file from the Filecoin network.",

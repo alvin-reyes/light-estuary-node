@@ -79,7 +79,7 @@ func BootstrapEstuaryPeers() []peer.AddrInfo {
 	return peers
 }
 
-func NewLightNode(ctx *cli.Context) (*LightNode, error) {
+func NewLightNode(ctx context.Context) (*LightNode, error) {
 	db, err := NewDatabase() // database
 	// node
 	whypfsPeer, err := whypfs.NewNode(whypfs.NewNodeParams{
@@ -100,9 +100,7 @@ func NewLightNode(ctx *cli.Context) (*LightNode, error) {
 }
 
 func NewFullLightNode(ctx *cli.Context) (*LightNode, error) {
-
-	// initialize the wallet (to make deals).
-
+	
 	// database connection
 	db, err := NewDatabase()
 

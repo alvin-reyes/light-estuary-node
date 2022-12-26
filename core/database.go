@@ -27,7 +27,7 @@ func NewDatabase() (*gorm.DB, error) {
 }
 
 func ConfigureModels(db *gorm.DB) {
-	db.AutoMigrate(&Content{}, &StagingBucket{}, &ContentDeals{})
+	db.AutoMigrate(&Content{}, &Bucket{}, &ContentDeals{})
 }
 
 // models
