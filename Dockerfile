@@ -8,7 +8,7 @@ RUN go mod download
 
 COPY . ./
 
-RUN go build -tags netgo -ldflags '-s -w' -o whypfs-gateway
+RUN go build -tags netgo -ldflags '-s -w' -o whypfs-api
 
 EXPOSE 1313
 
