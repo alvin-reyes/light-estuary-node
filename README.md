@@ -1,5 +1,7 @@
 # Light Estuary Node
 
+*THIS IS A WIP
+
 Bare minimum node to run Estuary specific functions such as:
 
 - Gateway to serve files
