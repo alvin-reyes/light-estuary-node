@@ -79,7 +79,7 @@ The following commands will store the file, dir, car or cid into the local block
 ./lnode make-deal <mineraddress> <cid>
 ```
 
-# Jobs
+## Jobs
 ```
 ./lnode
 ```
