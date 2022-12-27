@@ -1,6 +1,6 @@
 # Light Estuary Node
 
-*THIS IS A WIP
+*THIS IS A WIP*
 
 Bare minimum node to run Estuary specific functions such as:
 
@@ -53,15 +53,6 @@ Running the daemon will initialize the node configuration and the gateway at por
 # CLI commands
 The following commands will store the file, dir, car or cid into the local blockstore.
 
-## Buckets
-```
-./lnoda create-bucket <name>
-```
-
-## Miners
-```
-./lnode register <mineraddress>
-```
 
 ## Store / Upload
 ```
@@ -74,6 +65,23 @@ The following commands will store the file, dir, car or cid into the local block
 ## Retrieval 
 ```
 ./lnode retrieve <cid> <miners>
+```
+
+## Buckets
+```
+./lnode create-bucket <name>
+./lnode delete-bucket <uuid>
+```
+
+## Miners
+```
+./lnode miner-egister <mineraddress>
+./lnode make-deal <mineraddress> <cid>
+```
+
+# Jobs
+```
+./lnode
 ```
 
 # API endpoints
