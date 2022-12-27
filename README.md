@@ -73,8 +73,6 @@ The following commands will store the file, dir, car or cid into the local block
 ```
 ./lnode retrieve <cid> <miners>
 ```
-## Information
-
 
 # API endpoints
 ```

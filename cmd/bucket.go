@@ -8,11 +8,11 @@ import (
 )
 
 func init() {
-	bucketDefault1 := createDefaultBucket("default-1")
-	bucketDefault2 := createDefaultBucket("default-2")
-	bucketDefault3 := createDefaultBucket("default-3")
-	bucketDefault4 := createDefaultBucket("default-4")
-	bucketDefault5 := createDefaultBucket("default-5")
+	bucketDefault1 := core.CreateDefaultBucket("default-1")
+	bucketDefault2 := core.CreateDefaultBucket("default-2")
+	bucketDefault3 := core.CreateDefaultBucket("default-3")
+	bucketDefault4 := core.CreateDefaultBucket("default-4")
+	bucketDefault5 := core.CreateDefaultBucket("default-5")
 
 	lightNode.DB.Create(&bucketDefault1)
 	lightNode.DB.Create(&bucketDefault2)
@@ -21,20 +21,6 @@ func init() {
 	lightNode.DB.Create(&bucketDefault5)
 }
 
-func createDefaultBucket(name string) *core.Bucket {
-	// Create predefined buckets
-	uuid, _ := uuid.NewUUID()
-
-	bucket := &core.Bucket{
-		Name:       name,
-		UUID:       uuid.String(),
-		Status:     "open",
-		Cid:        "",
-		Created_at: time.Now(),
-		Updated_at: time.Now(),
-	}
-	return bucket
-}
 func BucketCmds() []*cli.Command {
 
 	var bucketCmds []*cli.Command

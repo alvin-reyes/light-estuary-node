@@ -8,19 +8,15 @@ type Condition struct {
 	PostProcess func() (bool, error)
 }
 
-// DB models
-type Bucket struct {
-	// ID is the unique identifier for the bucket.
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	UUID       string `json:"uuid"`
-	Status     string `json:"status"` // open, in-progress, completed (closed).
-	Cid        string `json:"cid"`    // car file of the consolidated content
+type PieceCommitment struct {
+	ID         uint   `gorm:"primaryKey"`
+	Cid        string `json:"cid"`
+	Piece      string `json:"piece"`
+	Size       int64  `json:"size"`
+	CarSize    int64  `json:"car_size"`
 	Created_at time.Time
 	Updated_at time.Time
-	//Condition  Condition "omit"
 }
-
 type Content struct {
 	ID            uint   `gorm:"primaryKey"`
 	Name          string `json:"name"`
