@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewDatabase() (*gorm.DB, error) {
+func OpenDatabase() (*gorm.DB, error) {
 
 	viper.SetConfigFile(".env")
 	err := viper.ReadInConfig()
@@ -27,7 +27,5 @@ func NewDatabase() (*gorm.DB, error) {
 }
 
 func ConfigureModels(db *gorm.DB) {
-	db.AutoMigrate(&Content{}, &Bucket{}, &ContentDeals{}, &StorageProviders{})
+	db.AutoMigrate(&Content{}, &Bucket{}, &ContentDeals{}, &StorageProviders{}, &PieceCommitment{})
 }
-
-// models

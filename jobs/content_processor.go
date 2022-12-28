@@ -5,11 +5,11 @@ import (
 	"light-estuary-node/core"
 )
 
-type CommpProcessor struct {
+type ContentProcessor struct {
 	Node *core.LightNode
 }
 
-func NewCommpProcessor() ContentProcessor {
+func NewContentProcessor() ContentProcessor {
 	node, err := core.NewLightNode(context.Background()) // new light node
 	if err != nil {
 		panic(err)
@@ -19,7 +19,7 @@ func NewCommpProcessor() ContentProcessor {
 	}
 }
 
-func (r *CommpProcessor) Run() {
+func (r *ContentProcessor) Run() {
 	// run the content processor.
 	r.Node.DB.Model(&core.Content{}).Where("status = ? and bucket is null", "open").Find(&core.Content{})
 

@@ -7,9 +7,10 @@ import (
 	"time"
 )
 
-func ConfigStoreRouter(e *echo.Group, node *core.LightNode) {
-	// upload
-	e.POST("/upload", func(c echo.Context) error {
+func ConfigPinRouter(e *echo.Group, node *core.LightNode) {
+
+	content := e.Group("/pin")
+	content.POST("/add", func(c echo.Context) error {
 		file, err := c.FormFile("file")
 		if err != nil {
 			return err
@@ -40,4 +41,17 @@ func ConfigStoreRouter(e *echo.Group, node *core.LightNode) {
 		c.Response().Write([]byte(addNode.Cid().String()))
 		return nil
 	})
+
+	content.POST("/cid", func(c echo.Context) error {
+		cid := c.FormValue("cid")
+		fmt.Println(cid)
+		return nil
+	})
+
+	content.POST("/cids", func(c echo.Context) error {
+		cid := c.FormValue("cid")
+		fmt.Println(cid)
+		return nil
+	})
+
 }

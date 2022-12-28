@@ -53,8 +53,9 @@ func InitializeEchoRouterConfig(ln *core.LightNode) {
 
 	apiGroup := e.Group("/api/v1")       // no protection for now
 	ConfigureGatewayRouter(apiGroup, ln) // access to light node
-	ConfigStoreRouter(apiGroup, ln)      // store
 	ConfigureNodeRouter(apiGroup, ln)
+	ConfigPinRouter(apiGroup, ln) // store
+	ConfigRetrieveRouter(apiGroup, ln)
 	// ConfigRetrieveRouter() // retrieval
 
 	ConfigMetricsRouter(apiGroup) // metrics

@@ -80,7 +80,7 @@ func BootstrapEstuaryPeers() []peer.AddrInfo {
 }
 
 func NewLightNode(ctx context.Context) (*LightNode, error) {
-	db, err := NewDatabase() // database
+	db, err := OpenDatabase() // database
 	// node
 	whypfsPeer, err := whypfs.NewNode(whypfs.NewNodeParams{
 		Ctx:       context.Background(),
@@ -100,9 +100,9 @@ func NewLightNode(ctx context.Context) (*LightNode, error) {
 }
 
 func NewFullLightNode(ctx *cli.Context) (*LightNode, error) {
-	
+
 	// database connection
-	db, err := NewDatabase()
+	db, err := OpenDatabase()
 
 	// node
 	whypfsPeer, err := whypfs.NewNode(whypfs.NewNodeParams{

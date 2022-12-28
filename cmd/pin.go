@@ -10,13 +10,36 @@ import (
 	"time"
 )
 
-func StoreCmd() []*cli.Command {
+func PinCmd() []*cli.Command {
+	var pinCommands []*cli.Command
+	pinCmd := &cli.Command{
+		Name:  "pin",
+		Usage: "Pin a File.",
+		Action: func(c *cli.Context) error {
+			//lightNode, _ := core.NewLightNode(c) // light node now
+			value := c.Args().Get(0)
+			r, err := os.Open(value)
+			if err != nil {
+				return nil
+			}
 
-	var storeCommands []*cli.Command
-
-	storeFileCmd := &cli.Command{
-		Name:  "store-file",
-		Usage: "Store a file on the Filecoin network.",
+			fileNode, err := lightNode.Node.AddPinFile(context.Background(), r, nil)
+			size, err := fileNode.Size()
+			content := core.Content{
+				Name:          r.Name(),
+				Size:          int64(size),
+				Cid:           fileNode.Cid().String(),
+				StagingBucket: "",
+				Created_at:    time.Now(),
+				Updated_at:    time.Now(),
+			}
+			lightNode.DB.Create(&content)
+			return nil
+		},
+	}
+	pinFileCmd := &cli.Command{
+		Name:  "pin-file",
+		Usage: "Pin a file on the Filecoin network.",
 		Action: func(c *cli.Context) error {
 			//lightNode, _ := core.NewLightNode(c) // light node now
 			value := c.Args().Get(0)
@@ -40,9 +63,9 @@ func StoreCmd() []*cli.Command {
 		},
 	}
 
-	storeDirCmd := &cli.Command{
-		Name:  "store-dir",
-		Usage: "Store a directory on the Filecoin network.",
+	pinDirCmd := &cli.Command{
+		Name:  "pin-dir",
+		Usage: "Pin a directory on the Filecoin network.",
 		Action: func(c *cli.Context) error {
 			//lightNode, _ := core.NewLightNode(c) // light node now
 			valuePath := c.Args().Get(0)
@@ -52,9 +75,9 @@ func StoreCmd() []*cli.Command {
 		},
 	}
 
-	storeCarCmd := &cli.Command{
-		Name:  "store-car",
-		Usage: "Store a car file on the Filecoin network.",
+	pinCarCmd := &cli.Command{
+		Name:  "pin-car",
+		Usage: "Pin a car file on the Filecoin network.",
 		Action: func(c *cli.Context) error {
 			//lightNode, _ := core.NewLightNode(c) // light node now
 			fmt.Println(&lightNode.Node.Host)
@@ -62,7 +85,7 @@ func StoreCmd() []*cli.Command {
 		},
 	}
 
-	storeCidCmd := &cli.Command{
+	pinCidCmd := &cli.Command{
 		Name:  "store-cid",
 		Usage: "Pull a CID and store a CID on this light estuary node",
 		Action: func(c *cli.Context) error {
@@ -86,6 +109,6 @@ func StoreCmd() []*cli.Command {
 		},
 	}
 
-	storeCommands = append(storeCommands, storeFileCmd, storeDirCmd, storeCarCmd, storeCidCmd)
-	return storeCommands
+	pinCommands = append(pinCommands, pinCmd, pinFileCmd, pinDirCmd, pinCarCmd, pinCidCmd)
+	return pinCommands
 }

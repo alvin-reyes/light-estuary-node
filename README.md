@@ -63,19 +63,22 @@ The following commands will store the file, dir, car or cid into the local block
 
 ## Store / Upload
 ```
-./lnode store-file <path>
-./lnode store-car <path>
-./lnode store-dir <path>
-./lnode store-cid <path>
+./lnode pin <path>
+./lnode pin-file <path>
+./lnode pin-car <path>
+./lnode pin-dir <path>
+./lnode pin-cid <path>
 ```
 
 ## Retrieval 
 ```
 ./lnode retrieve <cid> <miners>
+./lnode retrieve <cid>
 ```
 
 # API endpoints
 ```
+GET /api/v1/content/upload
 
 ```
 

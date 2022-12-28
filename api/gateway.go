@@ -245,32 +245,6 @@ func (gw *GatewayHandler) GatewayDirResolverCheckHandler(c echo.Context) error {
 
 	rscDir.GetNode()
 
-	c.Response().Write([]byte("nice dir"))
-	return nil
-}
-
-func GatewayFileResolverCheckHandler(c echo.Context) error {
-	p := c.Param("path")
-	req := c.Request().Clone(c.Request().Context())
-	req.URL.Path = p
-
-	fmt.Printf("Request path: " + p)
-	cid, err := cid.Decode(p)
-
-	if err != nil {
-		return err
-	}
-	//	 check if file or dir.
-	rsc, err := gatewayHandler.node.GetFile(c.Request().Context(), cid)
-
-	if err != nil {
-		return err
-	}
-	content, err := io.ReadAll(rsc)
-	if err != nil {
-		return err
-	}
-	c.Response().Write(content)
 	return nil
 }
 
