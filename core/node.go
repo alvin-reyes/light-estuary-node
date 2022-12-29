@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"fmt"
 	"github.com/application-research/filclient-unstable"
 	"github.com/application-research/whypfs-core"
 	"github.com/filecoin-project/go-address"
@@ -87,6 +86,8 @@ func BootstrapEstuaryPeers() []peer.AddrInfo {
 	return peers
 }
 
+// Add a config to enable gateway or not.
+// Add a config to enable content, bucket, commp, replication verifier processor
 func NewLightNode(ctx context.Context) (*LightNode, error) {
 	db, err := OpenDatabase() // database
 	// node
@@ -104,13 +105,14 @@ func NewLightNode(ctx context.Context) (*LightNode, error) {
 	//rhost := routed.Wrap(whypfsPeer.Host, whypfsPeer.Dht)
 	//fc, err := filclient.New(context.Background(), gatewayApi, nd.Wallet, walletAddr, nd.Blockstore, nd.Datastore, cfg.DataDir, opts...)
 	fc, err := filclient.New(ctx, whypfsPeer.Host, api, addr, whypfsPeer.Blockstore, whypfsPeer.Datastore)
-	fmt.Println("filclient", fc)
+
 	//context.Background(), whypfsPeer.Host,
 
 	// create the global light node.
 	return &LightNode{
-		Node: whypfsPeer,
-		DB:   db,
+		Node:      whypfsPeer,
+		DB:        db,
+		Filclient: fc,
 	}, nil
 }
 

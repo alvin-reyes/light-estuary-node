@@ -66,6 +66,7 @@ The following commands will store the file, dir, car or cid into the local block
 ./lnode pin-car <path>
 ./lnode pin-dir <path>
 ./lnode pin-cid <path>
+./lnode pin-deal <path> <miner>
 ```
 
 ## Retrieval 
@@ -74,16 +75,15 @@ The following commands will store the file, dir, car or cid into the local block
 ./lnode retrieve <cid>
 ```
 
+
 ## Jobs
 ```
 ./lnode jobs deal-run <cid>
 ./lnode jobs deal-run-bucket <bucket-uuid>
-```
+./lnode jobs commp-run
+./lnode jobs miner-check
+./lnode jobs replication-check
 
-# API endpoints
 ```
-GET /api/v1/content/upload
-```
-
 
 

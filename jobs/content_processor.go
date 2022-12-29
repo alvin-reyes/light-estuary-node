@@ -8,7 +8,7 @@ import (
 var workerPool = make(chan struct{}, 10)
 
 type ContentProcessor struct {
-	Node *core.LightNode
+	Processor
 }
 
 func NewContentProcessor() ContentProcessor {
@@ -17,13 +17,15 @@ func NewContentProcessor() ContentProcessor {
 		panic(err)
 	}
 	return ContentProcessor{
-		Node: node,
+		Processor{
+			LightNode: node,
+		},
 	}
 }
 
 func (r *ContentProcessor) Run() {
 	// run the content processor.
-	r.Node.DB.Model(&core.Content{}).Where("status = ? and bucket is null", "open").Find(&core.Content{})
+	r.LightNode.DB.Model(&core.Content{}).Where("status = ? and bucket is null", "open").Find(&core.Content{})
 
 	// get collection of files and compute size (if it's more than 1GB) assign it.
 

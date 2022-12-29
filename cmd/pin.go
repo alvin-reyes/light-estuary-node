@@ -10,8 +10,26 @@ import (
 	"time"
 )
 
+// call the local APIs instead.
 func PinCmd() []*cli.Command {
 	var pinCommands []*cli.Command
+
+	pinDealCmd := &cli.Command{
+		Name:  "pin-deal",
+		Usage: "Pin a file and make a deal",
+		Action: func(c *cli.Context) error {
+			////lightNode, _ := core.NewLightNode(c) // light node now
+			//filePath := c.Args().Get(0)
+			//// get the file and pin it.
+			//fileNode, err := lightNode.Node.AddPinFile(context.Background(), r, nil)
+			//if err != nil {
+			//	return err
+			//}
+			//// make a deal.
+			//
+			return nil
+		},
+	}
 	pinCmd := &cli.Command{
 		Name:  "pin",
 		Usage: "Pin a File.",
@@ -86,7 +104,7 @@ func PinCmd() []*cli.Command {
 	}
 
 	pinCidCmd := &cli.Command{
-		Name:  "store-cid",
+		Name:  "pin-cid",
 		Usage: "Pull a CID and store a CID on this light estuary node",
 		Action: func(c *cli.Context) error {
 			//lightNode, _ := core.NewLightNode(c) // light node now
@@ -109,6 +127,6 @@ func PinCmd() []*cli.Command {
 		},
 	}
 
-	pinCommands = append(pinCommands, pinCmd, pinFileCmd, pinDirCmd, pinCarCmd, pinCidCmd)
+	pinCommands = append(pinCommands, pinCmd, pinFileCmd, pinDirCmd, pinCarCmd, pinCidCmd, pinDealCmd)
 	return pinCommands
 }

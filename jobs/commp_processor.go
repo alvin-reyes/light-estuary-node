@@ -6,7 +6,7 @@ import (
 )
 
 type CommpProcessor struct {
-	Node *core.LightNode
+	Processor
 }
 
 func NewCommpProcessor() ContentProcessor {
@@ -15,13 +15,15 @@ func NewCommpProcessor() ContentProcessor {
 		panic(err)
 	}
 	return ContentProcessor{
-		Node: node,
+		Processor{
+			LightNode: node,
+		},
 	}
 }
 
 func (r *CommpProcessor) Run() {
 	// run the content processor.
-	r.Node.DB.Model(&core.Content{}).Where("status = ? and bucket is null", "open").Find(&core.Content{})
+	r.LightNode.DB.Model(&core.Content{}).Where("status = ? and bucket is null", "open").Find(&core.Content{})
 
 	// get collection of files and compute size (if it's more than 1GB) assign it.
 
