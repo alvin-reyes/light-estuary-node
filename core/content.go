@@ -1,6 +1,8 @@
 package core
 
-import "time"
+import (
+	"time"
+)
 
 type Condition struct {
 	PreProcess  func() (bool, error)
@@ -36,3 +38,12 @@ type ContentDeals struct {
 	Created_at  time.Time
 	Updated_at  time.Time
 }
+
+//func CreateContent(content Content) (Content, error) {
+//
+//	if err != nil {
+//		return content, err
+//	}
+//	database.Create(&content)
+//	return content, nil
+//}

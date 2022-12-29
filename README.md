@@ -14,7 +14,7 @@ Bare minimum node to run Estuary specific functions such as:
 ## Deal-Making
 One of the core value proposition of Estuary is it can manage the storage and retrieval deals. This light node uses a simplistic approach in making deals.
 
-- Reactively assigns contents to existing buckets.
+- Reactively process contents on buckets and make deals.
 - Buckets runs on worker groups to concurrently process CIDs.
 - Creates a CAR file for each set of bucket, meaning a CAR file has links to other files. 
 - The CAR file is then sent to the filecoin network via filcient.
@@ -34,9 +34,14 @@ View the gateway using:
 # Installation
 To install the node, clone this repo and build.
 
+## `make`
+```
+make all
+```
+
 ## `go build`
 ```
-RUN go build -tags netgo -ldflags '-s -w' -o lnode
+go build -tags netgo -ldflags '-s -w' -o lnode
 ```
 
 ## `docker`
@@ -69,27 +74,15 @@ The following commands will store the file, dir, car or cid into the local block
 ./lnode retrieve <cid>
 ```
 
-## Buckets
-```
-./lnode create-bucket <name>
-./lnode delete-bucket <uuid>
-```
-
-## Miners
-```
-./lnode miner-egister <mineraddress>
-./lnode make-deal <mineraddress> <cid>
-```
-
 ## Jobs
 ```
-./lnode
+./lnode jobs deal-run <cid>
+./lnode jobs deal-run-bucket <bucket-uuid>
 ```
 
 # API endpoints
 ```
 GET /api/v1/content/upload
-
 ```
 
 

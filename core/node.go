@@ -2,10 +2,17 @@ package core
 
 import (
 	"context"
+	"fmt"
+	"github.com/application-research/filclient-unstable"
 	"github.com/application-research/whypfs-core"
 	"github.com/filecoin-project/go-address"
+	"github.com/filecoin-project/go-jsonrpc"
+	lapi "github.com/filecoin-project/lotus/api"
+	"github.com/filecoin-project/lotus/api/client"
+	"github.com/filecoin-project/lotus/api/v1api"
 	"github.com/filecoin-project/lotus/chain/types"
 	"github.com/filecoin-project/lotus/chain/wallet/key"
+	cliutil "github.com/filecoin-project/lotus/cli/util"
 	"github.com/ipfs/go-blockservice"
 	bsfetcher "github.com/ipfs/go-fetcher/impl/blockservice"
 	blockstore "github.com/ipfs/go-ipfs-blockstore"
@@ -17,6 +24,7 @@ import (
 	"github.com/ipld/go-ipld-prime"
 	ipldbasicnode "github.com/ipld/go-ipld-prime/node/basic"
 	"github.com/ipld/go-ipld-prime/schema"
+	"github.com/labstack/gommon/log"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/multiformats/go-multiaddr"
 	"github.com/urfave/cli/v2"
@@ -25,12 +33,12 @@ import (
 )
 
 type LightNode struct {
-	Node   *whypfs.Node
-	Gw     *GatewayHandler
-	DB     *gorm.DB
-	Wallet LocalWallet
-	//Filclient *filclient.Client
-	Config *Configuration
+	Node      *whypfs.Node
+	Gw        *GatewayHandler
+	DB        *gorm.DB
+	Wallet    LocalWallet
+	Filclient *filclient.Client
+	Config    *Configuration
 }
 
 type LocalWallet struct {
@@ -91,6 +99,13 @@ func NewLightNode(ctx context.Context) (*LightNode, error) {
 	}
 
 	whypfsPeer.BootstrapPeers(BootstrapEstuaryPeers())
+	api, _, err := LotusConnection("http://api.chain.love")
+	addr, err := api.WalletDefaultAddress(ctx)
+	//rhost := routed.Wrap(whypfsPeer.Host, whypfsPeer.Dht)
+	//fc, err := filclient.New(context.Background(), gatewayApi, nd.Wallet, walletAddr, nd.Blockstore, nd.Datastore, cfg.DataDir, opts...)
+	fc, err := filclient.New(ctx, whypfsPeer.Host, api, addr, whypfsPeer.Blockstore, whypfsPeer.Datastore)
+	fmt.Println("filclient", fc)
+	//context.Background(), whypfsPeer.Host,
 
 	// create the global light node.
 	return &LightNode{
@@ -150,4 +165,23 @@ func NewGatewayHandler(node *whypfs.Node) (*GatewayHandler, error) {
 		resolver: resolver,
 		node:     node,
 	}, nil
+}
+
+func LotusConnection(fullNodeApiInfo string) (v1api.FullNode, jsonrpc.ClientCloser, error) {
+	info := cliutil.ParseApiInfo(fullNodeApiInfo)
+
+	var api lapi.FullNode
+	var closer jsonrpc.ClientCloser
+	addr, err := info.DialArgs("v1")
+	if err != nil {
+		log.Errorf("Error getting v1 API address %s", err)
+		return nil, nil, err
+	}
+
+	api, closer, err = client.NewFullNodeRPCV1(context.Background(), addr, info.AuthHeader())
+	if err != nil {
+		log.Fatalf("Error connecting to Lotus %s", err)
+	}
+
+	return api, closer, nil
 }

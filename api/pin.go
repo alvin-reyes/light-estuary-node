@@ -1,9 +1,10 @@
 package api
 
 import (
-	"fmt"
+	cid2 "github.com/ipfs/go-cid"
 	"github.com/labstack/echo/v4"
 	"light-estuary-node/core"
+	"strings"
 	"time"
 )
 
@@ -33,7 +34,7 @@ func ConfigPinRouter(e *echo.Group, node *core.LightNode) {
 			Updated_at:    time.Time{},
 		}
 
-		fmt.Println(content) //	save content
+		node.DB.Create(&content)
 
 		if err != nil {
 			return err
@@ -43,14 +44,61 @@ func ConfigPinRouter(e *echo.Group, node *core.LightNode) {
 	})
 
 	content.POST("/cid", func(c echo.Context) error {
-		cid := c.FormValue("cid")
-		fmt.Println(cid)
+		cidFromForm := c.FormValue("cid")
+		cidNode, err := cid2.Decode(cidFromForm)
+		if err != nil {
+			return err
+		}
+
+		//	 get the node
+		addNode, err := node.Node.Get(c.Request().Context(), cidNode)
+
+		// get availabel staging buckets.
+		// save the file to the database.
+		size, err := addNode.Size()
+
+		content := core.Content{
+			Name:          addNode.Cid().String(),
+			Size:          int64(size),
+			Cid:           addNode.Cid().String(),
+			StagingBucket: "",
+			Created_at:    time.Time{},
+			Updated_at:    time.Time{},
+		}
+
+		node.DB.Create(&content)
 		return nil
 	})
 
 	content.POST("/cids", func(c echo.Context) error {
-		cid := c.FormValue("cid")
-		fmt.Println(cid)
+		cids := c.FormValue("cids")
+
+		// process each cids
+		cidsArray := strings.Split(cids, ",")
+		for _, cid := range cidsArray {
+			cidNode, err := cid2.Decode(cid)
+			if err != nil {
+				return err
+			}
+
+			//	 get the node and save on the database
+			addNode, err := node.Node.Get(c.Request().Context(), cidNode)
+
+			// get availabel staging buckets.
+			// save the file to the database.
+			size, err := addNode.Size()
+
+			content := core.Content{
+				Name:          addNode.Cid().String(),
+				Size:          int64(size),
+				Cid:           addNode.Cid().String(),
+				StagingBucket: "",
+				Created_at:    time.Time{},
+				Updated_at:    time.Time{},
+			}
+
+			node.DB.Create(&content)
+		}
 		return nil
 	})
 
