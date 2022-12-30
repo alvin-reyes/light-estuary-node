@@ -28,11 +28,13 @@ import (
 	"github.com/multiformats/go-multiaddr"
 	"github.com/urfave/cli/v2"
 	"gorm.io/gorm"
+	"net/url"
 	"sync"
 )
 
 type LightNode struct {
 	Node      *whypfs.Node
+	Api       url.URL
 	Gw        *GatewayHandler
 	DB        *gorm.DB
 	Wallet    LocalWallet
@@ -89,7 +91,9 @@ func BootstrapEstuaryPeers() []peer.AddrInfo {
 // Add a config to enable gateway or not.
 // Add a config to enable content, bucket, commp, replication verifier processor
 func NewLightNode(ctx context.Context) (*LightNode, error) {
-	db, err := OpenDatabase() // database
+	//	database
+	db, err := OpenDatabase()
+
 	// node
 	whypfsPeer, err := whypfs.NewNode(whypfs.NewNodeParams{
 		Ctx:       context.Background(),
@@ -100,13 +104,11 @@ func NewLightNode(ctx context.Context) (*LightNode, error) {
 	}
 
 	whypfsPeer.BootstrapPeers(BootstrapEstuaryPeers())
+
+	//	Filclient
 	api, _, err := LotusConnection("http://api.chain.love")
 	addr, err := api.WalletDefaultAddress(ctx)
-	//rhost := routed.Wrap(whypfsPeer.Host, whypfsPeer.Dht)
-	//fc, err := filclient.New(context.Background(), gatewayApi, nd.Wallet, walletAddr, nd.Blockstore, nd.Datastore, cfg.DataDir, opts...)
 	fc, err := filclient.New(ctx, whypfsPeer.Host, api, addr, whypfsPeer.Blockstore, whypfsPeer.Datastore)
-
-	//context.Background(), whypfsPeer.Host,
 
 	// create the global light node.
 	return &LightNode{
@@ -132,6 +134,11 @@ func NewFullLightNode(ctx *cli.Context) (*LightNode, error) {
 
 	whypfsPeer.BootstrapPeers(BootstrapEstuaryPeers())
 
+	// Filclient
+	api, _, err := LotusConnection("http://api.chain.love")
+	addr, err := api.WalletDefaultAddress(context.Background())
+	fc, err := filclient.New(context.Background(), whypfsPeer.Host, api, addr, whypfsPeer.Blockstore, whypfsPeer.Datastore)
+
 	// gateway
 	gw, err := NewGatewayHandler(whypfsPeer)
 
@@ -141,9 +148,10 @@ func NewFullLightNode(ctx *cli.Context) (*LightNode, error) {
 
 	// create the global light node.
 	return &LightNode{
-		Node: whypfsPeer,
-		Gw:   gw,
-		DB:   db,
+		Node:      whypfsPeer,
+		Gw:        gw,
+		DB:        db,
+		Filclient: fc,
 	}, nil
 
 }

@@ -36,6 +36,8 @@ func ConfigPinRouter(e *echo.Group, node *core.LightNode) {
 
 		node.DB.Create(&content)
 
+		//node.Filclient.MinerByPeerID(nil).QueryStorageAskUnchecked(nil
+
 		if err != nil {
 			return err
 		}

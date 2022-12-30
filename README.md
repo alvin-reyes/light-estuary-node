@@ -10,6 +10,8 @@ Bare minimum node to run Estuary specific functions such as:
 - Deal Making (Storage and Retrieval)
 - Customizable Bucket/Staging Area for CIDs
 - UI to upload, download and monitor network and deals
+- Output all the data which can be fed into a database for analytics
+- Blockstore backup and restore option
 
 ## Deal-Making
 One of the core value proposition of Estuary is it can manage the storage and retrieval deals. This light node uses a simplistic approach in making deals.
