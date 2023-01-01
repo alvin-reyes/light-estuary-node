@@ -11,23 +11,23 @@ import (
 // this processors are independent. we want it to run on it's own without waiting
 // for other groups.
 
-type CommpProcessor struct {
+type CarGeneratorProcessor struct {
 	Processor
 }
 
-func NewCommpProcessor() ContentProcessor {
+func NewCarGeneratorProcessor() CarGeneratorProcessor {
 	node, err := core.NewLightNode(context.Background()) // new light node
 	if err != nil {
 		panic(err)
 	}
-	return ContentProcessor{
+	return CarGeneratorProcessor{
 		Processor{
 			LightNode: node,
 		},
 	}
 }
 
-func (r *CommpProcessor) Run() {
+func (r *CarGeneratorProcessor) Run() {
 
 	// run the content processor.
 	r.LightNode.DB.Model(&core.Content{}).Where("status = ? and bucket is null", "open").Find(&core.Content{})
