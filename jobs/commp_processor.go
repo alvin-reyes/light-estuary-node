@@ -29,12 +29,9 @@ func NewCommpProcessor() ContentProcessor {
 
 func (r *CommpProcessor) Run() {
 
-	// run the content processor.
-	r.LightNode.DB.Model(&core.Content{}).Where("status = ? and bucket is null", "open").Find(&core.Content{})
+	// get the cid of the bucket
 
-	// get collection of files and compute size (if it's more than 1GB) assign it.
+	//filclient.GeneratePieceCommitment(context.Background())
 
-	// if it's time, get the files and just assign to a new bucket
-
-	// create a bucket for tracking and set it to open.
+	// insert commp into table
 }

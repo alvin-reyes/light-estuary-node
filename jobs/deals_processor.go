@@ -7,3 +7,10 @@ type DealsProcessor struct {
 func NewDealsProcessor() DealsProcessor {
 	return DealsProcessor{}
 }
+
+func (r *DealsProcessor) Run() {
+
+	// get the cid of the bucket
+
+	//r.LightNode.Filclient.MakeDeal(context.Background())
+}

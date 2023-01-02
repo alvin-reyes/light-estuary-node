@@ -2,7 +2,7 @@ package core
 
 import (
 	"context"
-	"github.com/application-research/filclient-unstable"
+	fc "github.com/application-research/filclient"
 	"github.com/application-research/whypfs-core"
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-jsonrpc"
@@ -10,6 +10,7 @@ import (
 	"github.com/filecoin-project/lotus/api/client"
 	"github.com/filecoin-project/lotus/api/v1api"
 	"github.com/filecoin-project/lotus/chain/types"
+	"github.com/filecoin-project/lotus/chain/wallet"
 	"github.com/filecoin-project/lotus/chain/wallet/key"
 	cliutil "github.com/filecoin-project/lotus/cli/util"
 	"github.com/ipfs/go-blockservice"
@@ -38,7 +39,7 @@ type LightNode struct {
 	Gw        *GatewayHandler
 	DB        *gorm.DB
 	Wallet    LocalWallet
-	Filclient *filclient.Client
+	Filclient *fc.FilClient
 	Config    *Configuration
 }
 
@@ -108,7 +109,9 @@ func NewLightNode(ctx context.Context) (*LightNode, error) {
 	//	Filclient
 	api, _, err := LotusConnection("http://api.chain.love")
 	addr, err := api.WalletDefaultAddress(ctx)
-	fc, err := filclient.New(ctx, whypfsPeer.Host, api, addr, whypfsPeer.Blockstore, whypfsPeer.Datastore)
+	wallet := &wallet.LocalWallet{}
+
+	fc, err := fc.NewClient(whypfsPeer.Host, api, wallet, addr, whypfsPeer.Blockstore, whypfsPeer.Datastore, whypfsPeer.Config.DatastoreDir.Directory)
 
 	// create the global light node.
 	return &LightNode{
@@ -137,7 +140,8 @@ func NewFullLightNode(ctx *cli.Context) (*LightNode, error) {
 	// Filclient
 	api, _, err := LotusConnection("http://api.chain.love")
 	addr, err := api.WalletDefaultAddress(context.Background())
-	fc, err := filclient.New(context.Background(), whypfsPeer.Host, api, addr, whypfsPeer.Blockstore, whypfsPeer.Datastore)
+	wallet := &wallet.LocalWallet{}
+	fc, err := fc.NewClient(whypfsPeer.Host, api, wallet, addr, whypfsPeer.Blockstore, whypfsPeer.Datastore, whypfsPeer.Config.DatastoreDir.Directory)
 
 	// gateway
 	gw, err := NewGatewayHandler(whypfsPeer)
