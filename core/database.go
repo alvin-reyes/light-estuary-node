@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"time"
 )
 
 func OpenDatabase() (*gorm.DB, error) {
@@ -27,5 +28,26 @@ func OpenDatabase() (*gorm.DB, error) {
 }
 
 func ConfigureModels(db *gorm.DB) {
-	db.AutoMigrate(&Content{}, &Bucket{}, &StorageProviders{}, &PieceCommitment{})
+	db.AutoMigrate(&Content{}, &Bucket{}, &StorageProvider{}, &PieceCommitment{}, &Deals{}, &BucketReplicationRequest{}, &ContentReplicationRequest{})
+}
+
+// replication request
+type BucketReplicationRequest struct {
+	ID              uint   `gorm:"primaryKey"`
+	BucketUuid      string `gorm:"bucket_uuid"`
+	PieceCommitment string `gorm:"piece_commitment"`
+	Cid             string `gorm:"cid"`
+	Status          string `gorm:"status"`
+	Created_at      time.Time
+	Updated_at      time.Time
+}
+
+type ContentReplicationRequest struct {
+	ID              uint   `gorm:"primaryKey"`
+	ContentId       string `gorm:"content_id"`
+	PieceCommitment string `gorm:"piece_commitment"`
+	Cid             string `gorm:"cid"`
+	Status          string `gorm:"status"`
+	Created_at      time.Time
+	Updated_at      time.Time
 }

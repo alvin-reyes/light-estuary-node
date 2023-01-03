@@ -13,16 +13,14 @@ Bare minimum node to run Estuary specific functions such as:
 - Output all the data which can be fed into a database for analytics
 - Blockstore backup and restore option
 
-## Deal-Making
+## Content lifecycle (from pinned content to filecoin storage deal)
 One of the core value proposition of Estuary is it can manage the storage and retrieval deals. This light node uses a simplistic approach in making deals.
-
 - Reactively process contents on buckets and make deals.
 - Buckets runs on worker groups to concurrently process CIDs.
 - Creates a CAR file for each set of bucket, meaning a CAR file has links to other files. 
 - The CAR file is then sent to the filecoin network via filcient.
 - Uses FIFO to select content without deals. 
 - Replication default count of 3 for each content.
-
 
 ## Dashboard / Gateway 
 This node comes with it's own light gateway to serve directories and files.

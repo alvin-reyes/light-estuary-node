@@ -2,7 +2,9 @@ package core
 
 import (
 	"context"
+	"fmt"
 	fc "github.com/application-research/filclient"
+	"github.com/application-research/filclient/keystore"
 	"github.com/application-research/whypfs-core"
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-jsonrpc"
@@ -109,7 +111,13 @@ func NewLightNode(ctx context.Context) (*LightNode, error) {
 	//	Filclient
 	api, _, err := LotusConnection("http://api.chain.love")
 	addr, err := api.WalletDefaultAddress(ctx)
-	wallet := &wallet.LocalWallet{}
+	//wallet := &wallet.LocalWallet{}
+	wallet, err := SetupWallet("./wallet")
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(wallet.GetDefault())
 
 	fc, err := fc.NewClient(whypfsPeer.Host, api, wallet, addr, whypfsPeer.Blockstore, whypfsPeer.Datastore, whypfsPeer.Config.DatastoreDir.Directory)
 
@@ -198,4 +206,37 @@ func LotusConnection(fullNodeApiInfo string) (v1api.FullNode, jsonrpc.ClientClos
 	}
 
 	return api, closer, nil
+}
+
+func SetupWallet(dir string) (*wallet.LocalWallet, error) {
+	kstore, err := keystore.OpenOrInitKeystore(dir)
+	if err != nil {
+		return nil, err
+	}
+
+	wallet, err := wallet.NewWallet(kstore)
+	if err != nil {
+		return nil, err
+	}
+
+	addrs, err := wallet.WalletList(context.TODO())
+	if err != nil {
+		return nil, err
+	}
+
+	if len(addrs) == 0 {
+		_, err := wallet.WalletNew(context.TODO(), types.KTSecp256k1)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	defaddr, err := wallet.GetDefault()
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("Wallet address is: ", defaddr)
+
+	return wallet, nil
 }

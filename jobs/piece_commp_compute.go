@@ -14,19 +14,19 @@ import (
 // this processors are independent. we want it to run on it's own without waiting
 // for other groups.
 
-type CommpProcessor struct {
+type PieceCommpProcessor struct {
 	Processor
 }
 
-func NewCommpProcessor(ln *core.LightNode) CommpProcessor {
-	return CommpProcessor{
+func NewPieceCommpProcessor(ln *core.LightNode) PieceCommpProcessor {
+	return PieceCommpProcessor{
 		Processor{
 			LightNode: ln,
 		},
 	}
 }
 
-func (r *CommpProcessor) Run() {
+func (r *PieceCommpProcessor) Run() {
 
 	// get the CID field of the bucket and generate a commp for it.
 	var buckets []core.Bucket

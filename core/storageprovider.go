@@ -1,6 +1,6 @@
 package core
 
-type StorageProviders struct {
+type StorageProvider struct {
 	ID        string
 	Address   string
 	MultiAddr string

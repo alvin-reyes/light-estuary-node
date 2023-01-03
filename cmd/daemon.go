@@ -35,8 +35,8 @@ func DaemonCmd() []*cli.Command {
 
 			// launch the API node
 			api.InitializeEchoRouterConfig(ln)
-
 			api.LoopForever()
+
 			return nil
 		},
 	}
@@ -72,14 +72,20 @@ func runJobs(ln *core.LightNode) {
 			}()
 
 			go func() {
-				fmt.Println("commp processor")
-				newCommpProcessor := jobs.NewCommpProcessor(ln)
-				newCommpProcessor.Run()
+				fmt.Println("piece commp processor")
+				pieceNewCommpProcessor := jobs.NewPieceCommpProcessor(ln)
+				pieceNewCommpProcessor.Run()
 			}()
 			go func() {
-				fmt.Println("deals processor")
-				dealProcessor := jobs.NewDealsProcessor(ln)
+				fmt.Println("replication request processor")
+				dealProcessor := jobs.NewReplicationRequestProcessor(ln)
 				dealProcessor.Run()
+			}()
+
+			go func() {
+				fmt.Println("replication deal maker")
+				dealMaker := jobs.NewReplicationProcessor(ln)
+				dealMaker.Run()
 			}()
 		}
 	}
