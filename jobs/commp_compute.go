@@ -18,14 +18,10 @@ type CommpProcessor struct {
 	Processor
 }
 
-func NewCommpProcessor() CommpProcessor {
-	node, err := core.NewLightNode(context.Background()) // new light node
-	if err != nil {
-		panic(err)
-	}
+func NewCommpProcessor(ln *core.LightNode) CommpProcessor {
 	return CommpProcessor{
 		Processor{
-			LightNode: node,
+			LightNode: ln,
 		},
 	}
 }
@@ -34,7 +30,7 @@ func (r *CommpProcessor) Run() {
 
 	// get the CID field of the bucket and generate a commp for it.
 	var buckets []core.Bucket
-	r.LightNode.DB.Model(&core.Bucket{}).Where("status = ?", "open").Find(&buckets)
+	r.LightNode.DB.Model(&core.Bucket{}).Where("status = ?", "car-assigned").Find(&buckets)
 
 	// for each bucket, generate a commp
 	for _, bucket := range buckets {
@@ -59,11 +55,11 @@ func (r *CommpProcessor) Run() {
 			PaddedPieceSize: uint64(a),
 			Status:          "open",
 			BucketUuid:      bucket.UUID,
-			Created_at:      time.Time{},
-			Updated_at:      time.Time{},
+			Created_at:      time.Now(),
+			Updated_at:      time.Now(),
 		})
 
 		// update bucket status to commp-computed
-		r.LightNode.DB.Model(&core.Bucket{}).Where("uuid = ?", bucket.UUID).Update("status", "assigned")
+		r.LightNode.DB.Model(&core.Bucket{}).Where("uuid = ?", bucket.UUID).Update("status", "piece-assigned")
 	}
 }

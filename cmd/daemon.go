@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"github.com/urfave/cli/v2"
 	"light-estuary-node/api"
 	"light-estuary-node/core"
@@ -29,11 +30,11 @@ func DaemonCmd() []*cli.Command {
 				return err
 			}
 
+			//	launch the jobs
+			go runJobs(ln)
+
 			// launch the API node
 			api.InitializeEchoRouterConfig(ln)
-
-			//	launch the jobs
-			go runJobs()
 
 			api.LoopForever()
 			return nil
@@ -47,18 +48,39 @@ func DaemonCmd() []*cli.Command {
 
 }
 
-func runJobs() {
+func runJobs(ln *core.LightNode) {
 
+	fmt.Println("run jobs")
 	// run the job every 10 seconds.
 	tick := time.NewTicker(10 * time.Second)
 	for {
 		select {
 		case <-tick.C:
 			// run the job.
-			go jobs.NewBucketAssignProcessor().Run()
-			go jobs.NewCarGeneratorProcessor().Run()
-			go jobs.NewCommpProcessor().Run()
-			go jobs.NewDealsProcessor().Run()
+
+			go func() {
+				fmt.Println("running bucket assign job")
+				bucketAssignRun := jobs.NewBucketAssignProcessor(ln)
+				bucketAssignRun.Run()
+			}()
+
+			go func() {
+				fmt.Println("car generator processor")
+				carGeneratorProcessor := jobs.NewCarGeneratorProcessor(ln)
+				carGeneratorProcessor.Run()
+
+			}()
+
+			go func() {
+				fmt.Println("commp processor")
+				newCommpProcessor := jobs.NewCommpProcessor(ln)
+				newCommpProcessor.Run()
+			}()
+			go func() {
+				fmt.Println("deals processor")
+				dealProcessor := jobs.NewDealsProcessor(ln)
+				dealProcessor.Run()
+			}()
 		}
 	}
 

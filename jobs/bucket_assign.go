@@ -1,7 +1,6 @@
 package jobs
 
 import (
-	"context"
 	"github.com/google/uuid"
 	"light-estuary-node/core"
 	"time"
@@ -13,14 +12,10 @@ type BucketAssignProcessor struct {
 	Processor
 }
 
-func NewBucketAssignProcessor() BucketAssignProcessor {
-	node, err := core.NewLightNode(context.Background()) // new light node
-	if err != nil {
-		panic(err)
-	}
+func NewBucketAssignProcessor(ln *core.LightNode) BucketAssignProcessor {
 	return BucketAssignProcessor{
 		Processor{
-			LightNode: node,
+			LightNode: ln,
 		},
 	}
 }
@@ -28,7 +23,7 @@ func NewBucketAssignProcessor() BucketAssignProcessor {
 func (r *BucketAssignProcessor) Run() {
 	// run the content processor.
 	var contents []core.Content
-	r.LightNode.DB.Model(&core.Content{}).Where("status = ? and bucket_uuid is null", "open").Find(&contents)
+	r.LightNode.DB.Model(&core.Content{}).Where("bucket_uuid is ''").Find(&contents)
 
 	// get range of content ids and assign a bucket
 	// if there are contents, create a new bucket and assign it to the contents
@@ -39,7 +34,7 @@ func (r *BucketAssignProcessor) Run() {
 	if len(contents) > 0 {
 		// create a new bucket
 		bucket := core.Bucket{
-			Status:     "open",        // open, in-progress, completed (closed).
+			Status:     "open",        // open, car-assigned, piece-assigned, storage-deal-done
 			Name:       uuid.String(), // same as uuid
 			UUID:       uuid.String(),
 			Created_at: time.Now(), // log it.
@@ -47,7 +42,7 @@ func (r *BucketAssignProcessor) Run() {
 		r.LightNode.DB.Create(&bucket)
 
 		// assign bucket to contents
-		r.LightNode.DB.Model(&core.Content{}).Where("status = ? and bucket_uuid is null", "open").Update("bucket_uuid", bucket.UUID)
+		r.LightNode.DB.Model(&core.Content{}).Where("bucket_uuid is ''").Update("bucket_uuid", bucket.UUID)
 	}
 
 }

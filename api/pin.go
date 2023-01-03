@@ -26,12 +26,11 @@ func ConfigPinRouter(e *echo.Group, node *core.LightNode) {
 		// get availabel staging buckets.
 		// save the file to the database.
 		content := core.Content{
-			Name:          file.Filename,
-			Size:          file.Size,
-			Cid:           addNode.Cid().String(),
-			StagingBucket: "",
-			Created_at:    time.Time{},
-			Updated_at:    time.Time{},
+			Name:       file.Filename,
+			Size:       file.Size,
+			Cid:        addNode.Cid().String(),
+			Created_at: time.Time{},
+			Updated_at: time.Time{},
 		}
 
 		node.DB.Create(&content)
@@ -60,12 +59,11 @@ func ConfigPinRouter(e *echo.Group, node *core.LightNode) {
 		size, err := addNode.Size()
 
 		content := core.Content{
-			Name:          addNode.Cid().String(),
-			Size:          int64(size),
-			Cid:           addNode.Cid().String(),
-			StagingBucket: "",
-			Created_at:    time.Time{},
-			Updated_at:    time.Time{},
+			Name:       addNode.Cid().String(),
+			Size:       int64(size),
+			Cid:        addNode.Cid().String(),
+			Created_at: time.Time{},
+			Updated_at: time.Time{},
 		}
 
 		node.DB.Create(&content)
@@ -91,12 +89,11 @@ func ConfigPinRouter(e *echo.Group, node *core.LightNode) {
 			size, err := addNode.Size()
 
 			content := core.Content{
-				Name:          addNode.Cid().String(),
-				Size:          int64(size),
-				Cid:           addNode.Cid().String(),
-				StagingBucket: "",
-				Created_at:    time.Time{},
-				Updated_at:    time.Time{},
+				Name:       addNode.Cid().String(),
+				Size:       int64(size),
+				Cid:        addNode.Cid().String(),
+				Created_at: time.Time{},
+				Updated_at: time.Time{},
 			}
 
 			node.DB.Create(&content)

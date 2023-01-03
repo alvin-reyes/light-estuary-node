@@ -7,20 +7,6 @@ import (
 	"time"
 )
 
-func init() {
-	bucketDefault1 := core.CreateDefaultBucket("default-1")
-	bucketDefault2 := core.CreateDefaultBucket("default-2")
-	bucketDefault3 := core.CreateDefaultBucket("default-3")
-	bucketDefault4 := core.CreateDefaultBucket("default-4")
-	bucketDefault5 := core.CreateDefaultBucket("default-5")
-
-	lightNode.DB.Create(&bucketDefault1)
-	lightNode.DB.Create(&bucketDefault2)
-	lightNode.DB.Create(&bucketDefault3)
-	lightNode.DB.Create(&bucketDefault4)
-	lightNode.DB.Create(&bucketDefault5)
-}
-
 func BucketCmds() []*cli.Command {
 
 	var bucketCmds []*cli.Command

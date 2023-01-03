@@ -9,8 +9,12 @@ type DealsProcessor struct {
 	Processor
 }
 
-func NewDealsProcessor() DealsProcessor {
-	return DealsProcessor{}
+func NewDealsProcessor(ln *core.LightNode) DealsProcessor {
+	return DealsProcessor{
+		Processor{
+			LightNode: ln,
+		},
+	}
 }
 
 func (r *DealsProcessor) Run() {
@@ -23,18 +27,29 @@ func (r *DealsProcessor) Run() {
 	for _, pieceCommitment := range pieceCommitments {
 
 		// update status of piece commitment to in-progress
+		fmt.Println("making a deal for this piece")
 		fmt.Println(pieceCommitment.BucketUuid)
+		fmt.Println(pieceCommitment.Cid)
+
+		// create a deal
+		r.makeStorageDeal(&pieceCommitment)
+
+		// insert deal record
+
+		// update bucket record
 
 	}
 
 }
 
-func (r *DealsProcessor) makeStorageDeal() {
+func (r *DealsProcessor) makeStorageDeal(pieceCommittment *core.PieceCommitment) {
 
 	// 6 deals
+	//r.LightNode.Filclient.MakeDeal()
 
 }
 
-func (r *DealsProcessor) getMiners() {
+func (r *DealsProcessor) getStorageProviders() *[]core.StorageProviders {
 
+	return nil
 }

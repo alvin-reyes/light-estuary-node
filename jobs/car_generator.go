@@ -2,11 +2,11 @@ package jobs
 
 import (
 	"context"
-	"fmt"
 	"github.com/ipfs/go-cid"
 	format "github.com/ipfs/go-ipld-format"
 	"github.com/ipfs/go-merkledag"
 	"light-estuary-node/core"
+	"time"
 )
 
 // workers
@@ -19,14 +19,10 @@ type CarGeneratorProcessor struct {
 	Processor
 }
 
-func NewCarGeneratorProcessor() CarGeneratorProcessor {
-	node, err := core.NewLightNode(context.Background()) // new light node
-	if err != nil {
-		panic(err)
-	}
+func NewCarGeneratorProcessor(ln *core.LightNode) CarGeneratorProcessor {
 	return CarGeneratorProcessor{
 		Processor{
-			LightNode: node,
+			LightNode: ln,
 		},
 	}
 }
@@ -40,15 +36,20 @@ func (r *CarGeneratorProcessor) Run() {
 	//	for each bucket, get the contents and create a car
 	for _, bucket := range buckets {
 		var contents []core.Content
-		r.LightNode.DB.Model(&core.Content{}).Where("status = ? and bucket_uuid = ?", "open", bucket.UUID).Find(&contents)
+		r.LightNode.DB.Model(&core.Content{}).Where("bucket_uuid = ?", bucket.UUID).Find(&contents)
 		rootCid, err := r.buildCarForListOfContents(contents)
 		if err != nil {
 			panic(err)
 		}
-		// update the bucket
-		r.LightNode.DB.Model(&core.Bucket{}).Where("uuid = ?", bucket.UUID).Update("cid", rootCid.String())
-		// update contents.
-		r.LightNode.DB.Model(&core.Content{}).Where("status = ? and bucket_uuid = ?", "open", bucket.UUID).Update("status", "assigned")
+
+		// update bucket cid and status
+		//r.LightNode.DB.Model(&core.Bucket{}).x
+		bucket.Updated_at = time.Now()
+		bucket.Cid = rootCid.String()
+		bucket.Status = "car-assigned"
+
+		r.LightNode.DB.Updates(&bucket)
+
 	}
 }
 
@@ -66,6 +67,7 @@ func (r *CarGeneratorProcessor) buildCarForListOfContents(contents []core.Conten
 		if i == len(contents)-1 {
 			rootCid = node.Cid()
 		}
+		//fmt.Println("Adding node: ", rootCid.String())
 		r.addToBlockstore(r.LightNode.Node.DAGService, &node)
 	}
 
@@ -76,7 +78,7 @@ func (r *CarGeneratorProcessor) buildCarForListOfContents(contents []core.Conten
 
 func (r *CarGeneratorProcessor) addToBlockstore(ds format.DAGService, nds ...format.Node) {
 	for _, nd := range nds {
-		fmt.Println("Adding node: ", nd.Cid().String())
+		//fmt.Println("Adding node: ", nd.Cid().String())
 		if err := ds.Add(context.Background(), nd); err != nil {
 			panic(err)
 		}
