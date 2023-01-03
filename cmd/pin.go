@@ -44,12 +44,11 @@ func PinCmd() []*cli.Command {
 			fileNode, err := lightNode.Node.AddPinFile(context.Background(), r, nil)
 			size, err := fileNode.Size()
 			content := core.Content{
-				Name:          r.Name(),
-				Size:          int64(size),
-				Cid:           fileNode.Cid().String(),
-				StagingBucket: "",
-				Created_at:    time.Now(),
-				Updated_at:    time.Now(),
+				Name:       r.Name(),
+				Size:       int64(size),
+				Cid:        fileNode.Cid().String(),
+				Created_at: time.Now(),
+				Updated_at: time.Now(),
 			}
 			lightNode.DB.Create(&content)
 			return nil
@@ -69,12 +68,11 @@ func PinCmd() []*cli.Command {
 			fileNode, err := lightNode.Node.AddPinFile(context.Background(), r, nil)
 			size, err := fileNode.Size()
 			content := core.Content{
-				Name:          r.Name(),
-				Size:          int64(size),
-				Cid:           fileNode.Cid().String(),
-				StagingBucket: "",
-				Created_at:    time.Now(),
-				Updated_at:    time.Now(),
+				Name:       r.Name(),
+				Size:       int64(size),
+				Cid:        fileNode.Cid().String(),
+				Created_at: time.Now(),
+				Updated_at: time.Now(),
 			}
 			lightNode.DB.Create(&content)
 			return nil
@@ -115,12 +113,11 @@ func PinCmd() []*cli.Command {
 			fileNode, err := lightNode.Node.Get(context.Background(), cid)
 			size, err := fileNode.Size()
 			content := core.Content{
-				Name:          fileNode.Cid().String(),
-				Size:          int64(size),
-				Cid:           fileNode.Cid().String(),
-				StagingBucket: "",
-				Created_at:    time.Now(),
-				Updated_at:    time.Now(),
+				Name:       fileNode.Cid().String(),
+				Size:       int64(size),
+				Cid:        fileNode.Cid().String(),
+				Created_at: time.Now(),
+				Updated_at: time.Now(),
 			}
 			lightNode.DB.Create(&content)
 			return nil

@@ -10,23 +10,14 @@ type Condition struct {
 	PostProcess func() (bool, error)
 }
 
-type PieceCommitment struct {
+type Content struct {
 	ID         uint   `gorm:"primaryKey"`
-	Cid        string `json:"cid"`
-	Piece      string `json:"piece"`
+	Name       string `json:"name"`
 	Size       int64  `json:"size"`
-	CarSize    int64  `json:"car_size"`
+	Cid        string `json:"cid"`
+	BucketUuid string `json:"bucket_uuid"`
 	Created_at time.Time
 	Updated_at time.Time
-}
-type Content struct {
-	ID            uint   `gorm:"primaryKey"`
-	Name          string `json:"name"`
-	Size          int64  `json:"size"`
-	Cid           string `json:"cid"`
-	StagingBucket string `json:"staging_bucket"` // where this content will be associated
-	Created_at    time.Time
-	Updated_at    time.Time
 }
 
 type ContentDeals struct {

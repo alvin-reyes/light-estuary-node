@@ -5,6 +5,8 @@ import (
 	"github.com/urfave/cli/v2"
 	"light-estuary-node/api"
 	"light-estuary-node/core"
+	"light-estuary-node/jobs"
+	"time"
 )
 
 func DaemonCmd() []*cli.Command {
@@ -29,6 +31,10 @@ func DaemonCmd() []*cli.Command {
 
 			// launch the API node
 			api.InitializeEchoRouterConfig(ln)
+
+			//	launch the jobs
+			go runJobs()
+
 			api.LoopForever()
 			return nil
 		},
@@ -38,5 +44,22 @@ func DaemonCmd() []*cli.Command {
 	daemonCommands = append(daemonCommands, daemonCmd)
 
 	return daemonCommands
+
+}
+
+func runJobs() {
+
+	// run the job every 10 seconds.
+	tick := time.NewTicker(10 * time.Second)
+	for {
+		select {
+		case <-tick.C:
+			// run the job.
+			go jobs.NewBucketAssignProcessor().Run()
+			go jobs.NewCarGeneratorProcessor().Run()
+			go jobs.NewCommpProcessor().Run()
+			go jobs.NewDealsProcessor().Run()
+		}
+	}
 
 }

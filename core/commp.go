@@ -1,6 +1,22 @@
 package core
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
+
+type PieceCommitment struct {
+	ID              uint   `gorm:"primaryKey"`
+	Cid             string `json:"cid"`
+	Piece           string `json:"piece"`
+	Size            int64  `json:"size"`
+	CarSize         int64  `json:"car_size"`
+	PaddedPieceSize uint64 `json:"padded_piece_size"`
+	BucketUuid      string `json:"bucket_uuid"`
+	Status          string `json:"status"` // open, in-progress, completed (closed).
+	Created_at      time.Time
+	Updated_at      time.Time
+}
 
 func CreateCarAndComputeCommp(bucketUui string) {
 

@@ -33,20 +33,23 @@ func NewCarGeneratorProcessor() CarGeneratorProcessor {
 
 func (r *CarGeneratorProcessor) Run() {
 
-	// get the array of content that are open and have no bucket assigned.
-	var contents []core.Content
-	// run the content processor.
-	r.LightNode.DB.Model(&core.Content{}).Where("status = ? and bucket is null", "open").Find(&contents)
+	// get open buckets and create a car for each content cid
+	var buckets []core.Bucket
+	r.LightNode.DB.Model(&core.Bucket{}).Where("status = ?", "open").Find(&buckets)
 
-	// get collection of files and compute size (if it's more than 1GB) assign it.
-	rootCid, err := r.buildCarForListOfContents(contents)
-	if err != nil {
-		panic(err)
+	//	for each bucket, get the contents and create a car
+	for _, bucket := range buckets {
+		var contents []core.Content
+		r.LightNode.DB.Model(&core.Content{}).Where("status = ? and bucket_uuid = ?", "open", bucket.UUID).Find(&contents)
+		rootCid, err := r.buildCarForListOfContents(contents)
+		if err != nil {
+			panic(err)
+		}
+		// update the bucket
+		r.LightNode.DB.Model(&core.Bucket{}).Where("uuid = ?", bucket.UUID).Update("cid", rootCid.String())
+		// update contents.
+		r.LightNode.DB.Model(&core.Content{}).Where("status = ? and bucket_uuid = ?", "open", bucket.UUID).Update("status", "assigned")
 	}
-
-	fmt.Println(rootCid)
-	// once we have the root cid, we update the files
-	// create a bucket for tracking and set it to open.
 }
 
 func (r *CarGeneratorProcessor) buildCarForListOfContents(contents []core.Content) (cid.Cid, error) {
@@ -63,9 +66,21 @@ func (r *CarGeneratorProcessor) buildCarForListOfContents(contents []core.Conten
 		if i == len(contents)-1 {
 			rootCid = node.Cid()
 		}
+		r.addToBlockstore(r.LightNode.Node.DAGService, &node)
 	}
 
+	// add to blockstore
+
 	return rootCid, nil
+}
+
+func (r *CarGeneratorProcessor) addToBlockstore(ds format.DAGService, nds ...format.Node) {
+	for _, nd := range nds {
+		fmt.Println("Adding node: ", nd.Cid().String())
+		if err := ds.Add(context.Background(), nd); err != nil {
+			panic(err)
+		}
+	}
 }
 
 func (r *CarGeneratorProcessor) getNodeForCid(content core.Content) (format.Node, error) {
