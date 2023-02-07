@@ -111,15 +111,18 @@ func NewLightNode(ctx context.Context) (*LightNode, error) {
 	//	Filclient
 	api, _, err := LotusConnection("http://api.chain.love")
 	addr, err := api.WalletDefaultAddress(ctx)
+
+	fmt.Println(addr)
 	//wallet := &wallet.LocalWallet{}
 	wallet, err := SetupWallet("./wallet")
+	walletAddr, err := wallet.GetDefault()
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Println(wallet.GetDefault())
 
-	fc, err := fc.NewClient(whypfsPeer.Host, api, wallet, addr, whypfsPeer.Blockstore, whypfsPeer.Datastore, whypfsPeer.Config.DatastoreDir.Directory)
+	fc, err := fc.NewClient(whypfsPeer.Host, api, wallet, walletAddr, whypfsPeer.Blockstore, whypfsPeer.Datastore, whypfsPeer.Config.DatastoreDir.Directory)
 
 	// create the global light node.
 	return &LightNode{
@@ -232,9 +235,6 @@ func SetupWallet(dir string) (*wallet.LocalWallet, error) {
 	}
 
 	defaddr, err := wallet.GetDefault()
-	if err != nil {
-		return nil, err
-	}
 
 	fmt.Println("Wallet address is: ", defaddr)
 

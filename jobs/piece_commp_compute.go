@@ -42,7 +42,7 @@ func (r *PieceCommpProcessor) Run() {
 		}
 
 		//return commCid, preparedCar.Size(), abi.PaddedPieceSize(size).Unpadded(), nil
-		commitment, u, a, err := filclient.GeneratePieceCommitment(context.Background(), payloadCid, r.LightNode.Node.Blockstore)
+		commitment, u, a, err := filclient.GeneratePieceCommitmentFFI(context.Background(), payloadCid, r.LightNode.Node.Blockstore)
 		if err != nil {
 			return
 		}

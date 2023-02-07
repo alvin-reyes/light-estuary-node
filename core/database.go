@@ -28,7 +28,7 @@ func OpenDatabase() (*gorm.DB, error) {
 }
 
 func ConfigureModels(db *gorm.DB) {
-	db.AutoMigrate(&Content{}, &Bucket{}, &StorageProvider{}, &PieceCommitment{}, &Deals{}, &BucketReplicationRequest{}, &ContentReplicationRequest{})
+	db.AutoMigrate(&Content{}, &Bucket{}, &StorageProvider{}, &PieceCommitment{}, &Deals{}, &BucketReplicationRequest{})
 }
 
 // replication request

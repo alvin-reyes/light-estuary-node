@@ -69,6 +69,7 @@ func (r *CarGeneratorProcessor) buildCarForListOfContents(bucketUuid string, con
 
 	//	 if more than 1, pack it into a car.
 	baseNode := merkledag.NewRawNode([]byte(bucketUuid))
+	//var nodes []merkledag.ProtoNode
 	for i, content := range contents {
 		node := merkledag.ProtoNode{}
 		nodeFromCid, err := r.getNodeForCid(content)
@@ -90,12 +91,14 @@ func (r *CarGeneratorProcessor) buildCarForListOfContents(bucketUuid string, con
 		if i == len(contents)-1 {
 			rootCid = node.Cid()
 		}
+
 		r.addToBlockstore(r.LightNode.Node.DAGService, &node)
 	}
 	rootNodeFromP, err := r.LightNode.Node.Get(context.Background(), rootCid)
 	if err != nil {
 
 	}
+
 	r.traverseLinks(context.Background(), r.LightNode.Node.DAGService, rootNodeFromP)
 	return rootCid, nil
 }
