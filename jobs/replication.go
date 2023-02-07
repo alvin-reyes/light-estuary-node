@@ -78,7 +78,7 @@ func (r *ReplicationProcessor) makeStorageDeal(bucketReplicationRequests *core.B
 	if err != nil {
 		return err
 	}
-	fmt.Println(prop.DealProposal.Proposal.PieceCID)
+	//fmt.Println(prop.DealProposal.Proposal.PieceCID)
 	propnd, err := cborutil.AsIpld(prop.DealProposal)
 	//propnd, err := cborutil.AsIpld(prop.DealProposal)
 	if err != nil {
@@ -99,13 +99,23 @@ func (r *ReplicationProcessor) makeStorageDeal(bucketReplicationRequests *core.B
 	//	MinerVersion:        ask.MinerVersion,
 	//}
 
-	if err := r.LightNode.DB.Create(nil).Error; err != nil {
-		return xerrors.Errorf("failed to create database entry for deal: %w", err)
+	//if err := r.LightNode.DB.Create(nil).Error; err != nil {
+	//	return xerrors.Errorf("failed to create database entry for deal: %w", err)
+	//}
+	fmt.Println(r.GetStorageProviders()[0].Address)
+	propPhase, err := r.sendProposalV120(context.Background(), *prop, propnd.Cid(), dealUUID, 0)
+
+	if err != nil {
+		fmt.Println(err)
+		//return err
 	}
 
-	propPhase, err := r.sendProposalV120(context.Background(), *prop, propnd.Cid(), dealUUID, 0)
 	fmt.Println(propPhase)
 	proto, err := r.LightNode.Filclient.DealProtocolForMiner(context.Background(), r.GetStorageProviders()[0].Address)
+	if err != nil {
+		fmt.Println(err)
+		//return err
+	}
 	fmt.Println(proto)
 	//isPushTransfer := proto == filclient.DealProtocolv110
 	// set the piece commitment status to complete
@@ -134,15 +144,13 @@ func (r *ReplicationProcessor) GetStorageProviders() []MinerAddress {
 		if err != nil {
 			fmt.Println("error on miner address", err, a)
 		}
-		fmt.Println("a", a)
 		storageProviders = append(storageProviders, MinerAddress{Address: a})
 	}
-	fmt.Println(storageProviders)
 	return storageProviders
 }
 
 var mainnetMinerStrs = []string{
-	"f0123261",
+	"f01907556",
 }
 
 func (r *ReplicationProcessor) sendProposalV120(ctx context.Context, netprop network.Proposal, propCid cid.Cid, dealUUID uuid.UUID, dbid uint) (bool, error) {
